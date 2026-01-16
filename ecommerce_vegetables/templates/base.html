@@ -15,7 +15,16 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
   <style>
-    /* Navbar hover effect */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+    }
+
     .navbar-nav .nav-item a:hover {
       opacity: 0.85;
       transition: 0.2s;
@@ -25,7 +34,7 @@
 
 <body class="bg-light">
 
-<!-- Navbar -->
+<!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
 
@@ -46,23 +55,38 @@
         {% if current_user.is_authenticated %}
 
           {% if current_user.is_admin %}
-            <!-- Admin Dashboard Link -->
+            <!-- Admin Dashboard -->
             <li class="nav-item">
-              <a class="btn btn-warning btn-sm d-flex align-items-center gap-1" href="{{ url_for('admin_dashboard') }}">
+              <a class="btn btn-warning btn-sm d-flex align-items-center gap-1"
+                 href="{{ url_for('admin_dashboard') }}">
                 <i class="bi bi-speedometer2"></i> Admin Dashboard
               </a>
             </li>
-          {% else %}
-            <!-- Cart for normal users -->
+
             <li class="nav-item">
-              <a class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" href="{{ url_for('cart') }}">
-                <i class="bi bi-cart-fill"></i> Cart
+              <a class="btn btn-danger btn-sm d-flex align-items-center gap-1"
+                 href="{{ url_for('admin_logout') }}">
+                <i class="bi bi-box-arrow-right"></i> Logout
               </a>
             </li>
 
-            <!-- Logout for normal users -->
+          {% else %}
+            <!-- Cart with Count -->
             <li class="nav-item">
-              <a class="btn btn-danger btn-sm d-flex align-items-center gap-1" href="{{ url_for('logout') }}">
+              <a class="btn btn-outline-light btn-sm position-relative d-flex align-items-center gap-1"
+                 href="{{ url_for('cart') }}">
+                <i class="bi bi-cart-fill"></i> Cart
+                <span id="cart-count"
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ cart_count }}
+                </span>
+              </a>
+            </li>
+
+            <!-- Logout -->
+            <li class="nav-item">
+              <a class="btn btn-danger btn-sm d-flex align-items-center gap-1"
+                 href="{{ url_for('logout') }}">
                 <i class="bi bi-box-arrow-right"></i> Logout
               </a>
             </li>
@@ -71,13 +95,16 @@
         {% else %}
           <!-- Login -->
           <li class="nav-item">
-            <a class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" href="{{ url_for('login') }}">
+            <a class="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
+               href="{{ url_for('login') }}">
               <i class="bi bi-box-arrow-in-right"></i> Login
             </a>
           </li>
+
           <!-- Register -->
           <li class="nav-item">
-            <a class="btn btn-success btn-sm d-flex align-items-center gap-1" href="{{ url_for('register') }}">
+            <a class="btn btn-success btn-sm d-flex align-items-center gap-1"
+               href="{{ url_for('register') }}">
               <i class="bi bi-person-plus-fill"></i> Register
             </a>
           </li>
@@ -88,26 +115,45 @@
   </div>
 </nav>
 
-<!-- Page Content -->
-<div class="container my-5">
+<!-- ================= MAIN CONTENT ================= -->
+<main class="container my-5">
   {% block content %}{% endblock %}
+</main>
+
+<!-- ================= TOAST ================= -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="cartToast" class="toast align-items-center text-bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body">
+        ✅ Added to cart successfully
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast"></button>
+    </div>
+  </div>
 </div>
 
-<!-- Footer -->
-<footer class="mt-auto text-center bg-dark text-white py-4">
+<!-- ================= FOOTER ================= -->
+<footer class="bg-dark text-white text-center py-3 w-100">
   <div class="container">
-    <p class="mb-2">&copy; {{ current_year }} VegStore. All Rights Reserved.</p>
-    
+    <p class="mb-1">&copy; {{ current_year }} VegStore. All Rights Reserved.</p>
     <p class="mb-0">
-      <a href="#" class="text-white text-decoration-none">Privacy Policy</a> | 
-      <a href="#" class="text-white text-decoration-none">Terms of Service</a> | 
-      <a href="https://ajittportfolio.netlify.app/" target="_blank" class="text-white text-decoration-none">Design By AJIT TORANE</a>
+      <a href="#" class="text-white text-decoration-none">Privacy Policy</a> |
+      <a href="#" class="text-white text-decoration-none">Terms</a> |
+      <a href="https://ajittportfolio.netlify.app/"
+         target="_blank"
+         class="text-white text-decoration-none">
+        Design by Ajit Torane
+      </a>
     </p>
   </div>
 </footer>
 
-<!-- Bootstrap JS Bundle -->
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
 </html>

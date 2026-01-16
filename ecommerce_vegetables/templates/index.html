@@ -49,24 +49,15 @@
             <!-- ADD TO CART FORM -->
             <form action="{{ url_for('add_to_cart', id=product.id) }}" method="POST" class="mt-auto">
 
-              <!-- Quantity Controls -->
-              <div class="quantity-control d-flex align-items-center justify-content-center mb-3">
-                <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
-                <input type="number"
-                       class="form-control form-control-sm mx-2 quantity-input text-center"
-                       value="1"
-                       min="1"
-                       style="width:60px;">
-                <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
-              </div>
-
-              <!-- Hidden Quantity -->
-              <input type="hidden" name="quantity" class="cart-quantity" value="1">
+          
 
               <!-- Add to Cart Button -->
-              <button type="submit" class="btn btn-primary w-100 add-to-cart btn-hover">
-                🛒 Add to Cart
-              </button>
+             <button type="submit"
+        class="btn btn-primary w-100 btn-hover add-to-cart-btn"
+        data-product-id="{{ product.id }}">
+  🛒 Add to Cart
+</button>
+
             </form>
             {% else %}
             <!-- Coming Soon Button -->

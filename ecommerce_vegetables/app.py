@@ -172,6 +172,16 @@ def remove_from_cart(id):
     flash("Item removed from cart.", "success")
     return redirect(url_for('cart'))
 
+
+
+@app.context_processor
+def inject_cart_count():
+    if current_user.is_authenticated and not current_user.is_admin:
+        count = Order.query.filter_by(user_id=current_user.id).count()
+    else:
+        count = 0
+    return dict(cart_count=count)
+
 # ------------------- CHECKOUT -------------------
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
