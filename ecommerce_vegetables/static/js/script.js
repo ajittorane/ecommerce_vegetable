@@ -126,3 +126,4 @@ document.querySelectorAll(".add-to-cart").forEach(btn => {
     });
   });
 });
+});
