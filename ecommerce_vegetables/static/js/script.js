@@ -87,20 +87,45 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===========================
      ADD TO CART BUTTON FEEDBACK
   =========================== */
-  document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      // Prevent double submission
-      btn.disabled = true;
+ /* ===========================
+   ADD TO CART BUTTON FEEDBACK
+=========================== */
+document.querySelectorAll(".add-to-cart").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault(); // Prevent form from submitting immediately
 
+    const form = btn.closest("form");
+    const formData = new FormData(form);
+
+    // Send POST request via fetch
+    fetch(form.action, {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text()) // We don't care about response body here
+    .then(() => {
+      // Show temporary success message
+      let msg = document.createElement("div");
+      msg.className = "alert alert-success position-fixed top-3 end-3";
+      msg.style.zIndex = 9999;
+      msg.textContent = "🛒 Product added to cart!";
+      document.body.appendChild(msg);
+
+      // Remove message after 1.5s
+      setTimeout(() => msg.remove(), 1500);
+
+      // Optional: Add visual feedback on button
       const originalText = btn.innerHTML;
       btn.innerHTML = "✓ Added";
-
-      // Re-enable button after short delay
+      btn.disabled = true;
       setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
       }, 1000);
+    })
+    .catch(err => {
+      alert("Something went wrong!");
+      console.error(err);
     });
   });
-
 });

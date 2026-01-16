@@ -120,13 +120,7 @@ def logout():
 @login_required
 def add_to_cart(id):
     if user_only():
-        flash("Admins cannot add products to cart!", "warning")
-        return redirect(url_for('index'))
-
-    product = Product.query.get_or_404(id)
-    if product.status == 'upcoming':
-        flash("This product is coming soon and cannot be added yet.", "info")
-        return redirect(url_for('index'))
+        return ("", 403)
 
     try:
         qty = int(request.form.get('quantity', 1))
@@ -141,8 +135,13 @@ def add_to_cart(id):
     else:
         db.session.add(Order(user_id=current_user.id, product_id=id, quantity=qty))
     db.session.commit()
+    
+    # Check if request is AJAX (fetch)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return ("", 204)  # No content
     flash(f"{qty} item(s) added to cart.", "success")
     return redirect(url_for('cart'))
+
 
 @app.route('/cart')
 @login_required
