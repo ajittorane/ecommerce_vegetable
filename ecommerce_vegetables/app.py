@@ -236,6 +236,7 @@ def admin_orders():
     users = {u.id: u for u in User.query.all()}
     return render_template('admin_orders.html', orders=orders, products=products, users=users)
 
+
 # ------------------- ADMIN CRUD -------------------
 @app.route('/admin/add', methods=['GET', 'POST'])
 @admin_required
