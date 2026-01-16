@@ -1,0 +1,53 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">📦 Received Orders</h2>
+
+    {% if orders %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price (₹)</th>
+                    <th>Subtotal (₹)</th>
+                    <th>Customer Name</th>
+                    <th>Address</th>
+                    <th>Mobile</th>
+                    <th>Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    {% set p = products.get(order.product_id) %}
+                    {% set u = users.get(order.user_id) %}
+                    {% if p and u %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>{{ p.name }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>₹{{ "%.2f"|format(p.price) }}</td>
+                        <td>₹{{ "%.2f"|format(p.price * order.quantity) }}</td>
+                        <td>{{ order.customer_name or "-" }}</td>
+                        <td>{{ order.address or "-" }}</td>
+                        <td>{{ order.mobile or "-" }}</td>
+                        <td>{{ order.payment_method or "-" }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-info text-center p-4">
+            No orders received yet.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
