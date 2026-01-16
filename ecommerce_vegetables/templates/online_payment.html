@@ -1,0 +1,25 @@
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<button id="pay-btn" class="btn btn-success btn-lg">
+  Pay Now
+</button>
+
+<script>
+fetch("/create-razorpay-order")
+.then(res => res.json())
+.then(data => {
+  document.getElementById("pay-btn").onclick = () => {
+    const options = {
+      key: data.key,
+      amount: data.amount * 100,
+      currency: "INR",
+      name: "VegStore",
+      order_id: data.order_id,
+      handler: function () {
+        window.location.href = "/payment-success";
+      }
+    };
+    new Razorpay(options).open();
+  };
+});
+</script>

@@ -1,0 +1,16 @@
+<table class="table table-bordered">
+<tr>
+  <th>Product</th>
+  <th>Qty</th>
+  <th>Payment</th>
+  <th>Status</th>
+</tr>
+{% for o in orders %}
+<tr>
+  <td>{{ products[o.product_id].name }}</td>
+  <td>{{ o.quantity }}</td>
+  <td>{{ o.payment_status }}</td>
+  <td>{{ o.delivery_status }}</td>
+</tr>
+{% endfor %}
+</table>
