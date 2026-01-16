@@ -21,7 +21,7 @@
              style="height:220px; object-fit:cover; transition: transform 0.3s;">
 
         <!-- Availability Badge -->
-        {% if product.price > 0 %}
+        {% if product.status == 'available' %}
         <span class="badge position-absolute top-2 start-2 bg-success text-white px-3 py-1 rounded-pill">
           Available
         </span>
@@ -37,36 +37,44 @@
           <!-- Product Name & Price -->
           <h5 class="fw-semibold mb-1">{{ product.name }}</h5>
           <p class="text-success fw-bold mb-3">
-            {% if product.price > 0 %}
+            {% if product.status == 'available' %}
               ₹{{ "%.2f"|format(product.price) }}
             {% else %}
               Coming Soon
             {% endif %}
           </p>
 
-          {% if current_user.is_authenticated and product.price > 0 %}
-          <!-- ADD TO CART FORM -->
-          <form action="{{ url_for('add_to_cart', id=product.id) }}" method="POST" class="mt-auto">
+          {% if current_user.is_authenticated %}
+            {% if product.status == 'available' %}
+            <!-- ADD TO CART FORM -->
+            <form action="{{ url_for('add_to_cart', id=product.id) }}" method="POST" class="mt-auto">
 
-            <!-- Quantity Controls -->
-            <div class="quantity-control d-flex align-items-center justify-content-center mb-3">
-              <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
-              <input type="number"
-                     class="form-control form-control-sm mx-2 quantity-input text-center"
-                     value="1"
-                     min="1"
-                     style="width:60px;">
-              <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
-            </div>
+              <!-- Quantity Controls -->
+              <div class="quantity-control d-flex align-items-center justify-content-center mb-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
+                <input type="number"
+                       class="form-control form-control-sm mx-2 quantity-input text-center"
+                       value="1"
+                       min="1"
+                       style="width:60px;">
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
+              </div>
 
-            <!-- Hidden Quantity -->
-            <input type="hidden" name="quantity" class="cart-quantity" value="1">
+              <!-- Hidden Quantity -->
+              <input type="hidden" name="quantity" class="cart-quantity" value="1">
 
-            <!-- Add to Cart Button -->
-            <button type="submit" class="btn btn-primary w-100 add-to-cart btn-hover">
-              🛒 Add to Cart
-            </button>
-          </form>
+              <!-- Add to Cart Button -->
+              <button type="submit" class="btn btn-primary w-100 add-to-cart btn-hover">
+                🛒 Add to Cart
+              </button>
+            </form>
+            {% else %}
+            <!-- Coming Soon Button -->
+            <button class="btn btn-secondary w-100 mt-auto" disabled>Coming Soon</button>
+            {% endif %}
+          {% else %}
+            <!-- Login Button -->
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary w-100 mt-auto">Login to Buy</a>
           {% endif %}
 
         </div>
@@ -77,6 +85,7 @@
       <p class="text-muted fs-5">
         No products available at the moment. Check back soon! 🥦
       </p>
+      <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">Shop Now</a>
     </div>
     {% endfor %}
   </div>

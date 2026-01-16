@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, login_user, logout_user,
@@ -66,7 +66,6 @@ def admin_required(f):
     return wrapper
 
 def user_only():
-    """Returns True if current user is admin (to block access for admins)."""
     return current_user.is_admin
 
 # ------------------- PUBLIC -------------------
@@ -122,26 +121,20 @@ def add_to_cart(id):
     if user_only():
         return ("", 403)
 
-    try:
-        qty = int(request.form.get('quantity', 1))
-        if qty < 1:
-            qty = 1
-    except ValueError:
-        qty = 1
-
+    qty = max(int(request.form.get('quantity', 1)), 1)
     order = Order.query.filter_by(user_id=current_user.id, product_id=id).first()
     if order:
         order.quantity += qty
     else:
         db.session.add(Order(user_id=current_user.id, product_id=id, quantity=qty))
     db.session.commit()
-    
-    # Check if request is AJAX (fetch)
+
+    # AJAX request returns JSON
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return ("", 204)  # No content
+        return jsonify(message=f"{qty} item(s) added to cart.")
+
     flash(f"{qty} item(s) added to cart.", "success")
     return redirect(url_for('cart'))
-
 
 @app.route('/cart')
 @login_required
@@ -158,8 +151,7 @@ def cart():
 def update_cart(id):
     order = Order.query.get_or_404(id)
     if order.user_id != current_user.id:
-        flash("Unauthorized action!", "danger")
-        return redirect(url_for('cart'))
+        return ("", 403)
 
     action = request.form.get('action')
     if action == 'increase':
@@ -167,16 +159,14 @@ def update_cart(id):
     elif action == 'decrease' and order.quantity > 1:
         order.quantity -= 1
     db.session.commit()
-    return redirect(url_for('cart'))
+    return ("", 204)
 
 @app.route('/remove_from_cart/<int:id>', methods=['POST'])
 @login_required
 def remove_from_cart(id):
     order = Order.query.get_or_404(id)
     if order.user_id != current_user.id:
-        flash("Unauthorized action!", "danger")
-        return redirect(url_for('cart'))
-
+        return ("", 403)
     db.session.delete(order)
     db.session.commit()
     flash("Item removed from cart.", "success")
@@ -246,8 +236,6 @@ def admin_orders():
     users = {u.id: u for u in User.query.all()}
     return render_template('admin_orders.html', orders=orders, products=products, users=users)
 
-
-
 # ------------------- ADMIN CRUD -------------------
 @app.route('/admin/add', methods=['GET', 'POST'])
 @admin_required
@@ -267,7 +255,6 @@ def admin_add():
             db.session.commit()
             flash("Product added successfully!", "success")
             return redirect(url_for('admin_dashboard'))
-
         flash("Invalid image file!", "danger")
     return render_template('admin_add.html')
 
