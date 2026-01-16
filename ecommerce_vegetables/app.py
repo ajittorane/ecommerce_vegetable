@@ -21,6 +21,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db = SQLAlchemy(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -65,10 +66,7 @@ def admin_required(f):
     return wrapper
 
 def user_only():
-    if current_user.is_admin:
-        flash("Admins cannot access this page", "warning")
-        return True
-    return False
+    return current_user.is_admin
 
 # ------------------- PUBLIC -------------------
 @app.route('/')
@@ -103,10 +101,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        user = User.query.filter_by(
-            username=request.form['username'],
-            is_admin=False
-        ).first()
+        user = User.query.filter_by(username=request.form['username'], is_admin=False).first()
         if user and check_password_hash(user.password, request.form['password']):
             login_user(user)
             return redirect(url_for('index'))
@@ -126,13 +121,7 @@ def add_to_cart(id):
     if user_only():
         return redirect(url_for('index'))
 
-    # ✅ get quantity from form
-    try:
-        qty = int(request.form.get('quantity', 1))
-        if qty < 1:
-            qty = 1
-    except ValueError:
-        qty = 1
+    qty = int(request.form.get('quantity', 1))
 
     order = Order.query.filter_by(
         user_id=current_user.id,
@@ -140,7 +129,6 @@ def add_to_cart(id):
     ).first()
 
     if order:
-        # ✅ add selected quantity
         order.quantity += qty
     else:
         db.session.add(Order(
@@ -153,12 +141,12 @@ def add_to_cart(id):
     flash("Product added to cart", "success")
     return redirect(url_for('cart'))
 
-
 @app.route('/cart')
 @login_required
 def cart():
     if user_only():
         return redirect(url_for('index'))
+
     orders = Order.query.filter_by(user_id=current_user.id).all()
     products = {p.id: p for p in Product.query.all()}
     return render_template('cart.html', orders=orders, products=products)
@@ -167,8 +155,8 @@ def cart():
 @login_required
 def update_cart(id):
     order = Order.query.get_or_404(id)
+
     if order.user_id != current_user.id:
-        flash("Unauthorized action!", "danger")
         return redirect(url_for('cart'))
 
     action = request.form.get('action')
@@ -176,6 +164,7 @@ def update_cart(id):
         order.quantity += 1
     elif action == 'decrease' and order.quantity > 1:
         order.quantity -= 1
+
     db.session.commit()
     return redirect(url_for('cart'))
 
@@ -183,8 +172,8 @@ def update_cart(id):
 @login_required
 def remove_from_cart(id):
     order = Order.query.get_or_404(id)
+
     if order.user_id != current_user.id:
-        flash("Unauthorized action!", "danger")
         return redirect(url_for('cart'))
 
     db.session.delete(order)
@@ -192,11 +181,13 @@ def remove_from_cart(id):
     flash("Item removed", "success")
     return redirect(url_for('cart'))
 
+# ------------------- CHECKOUT -------------------
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
     if user_only():
         return redirect(url_for('index'))
+
     orders = Order.query.filter_by(user_id=current_user.id).all()
     if not orders:
         flash("Your cart is empty", "warning")
@@ -208,6 +199,7 @@ def checkout():
             o.address = request.form['address']
             o.mobile = request.form['mobile']
             o.payment_method = request.form['payment']
+
         db.session.commit()
         flash("Order placed successfully!", "success")
         return redirect(url_for('order_success'))
@@ -220,17 +212,24 @@ def checkout():
 def order_success():
     return render_template('order_success.html')
 
-# ------------------- ADMIN -------------------
+# ------------------- ADMIN AUTH -------------------
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username'], is_admin=True).first()
-        if user and check_password_hash(user.password, request.form['password']):
-            login_user(user)
+        admin = User.query.filter_by(username=request.form['username'], is_admin=True).first()
+        if admin and check_password_hash(admin.password, request.form['password']):
+            login_user(admin)
             return redirect(url_for('admin_dashboard'))
         flash("Invalid admin login", "danger")
     return render_template('admin_login.html')
 
+@app.route('/admin/logout')
+@login_required
+def admin_logout():
+    logout_user()
+    return redirect(url_for('admin_login'))
+
+# ------------------- ADMIN DASHBOARD -------------------
 @app.route('/admin')
 @admin_required
 def admin_dashboard():
@@ -250,34 +249,40 @@ def admin_orders():
 @admin_required
 def admin_add():
     if request.method == 'POST':
-        name = request.form['name']
-        price = float(request.form['price'])
         file = request.files['image']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            db.session.add(Product(name=name, price=price, image=filename))
+
+            db.session.add(Product(
+                name=request.form['name'],
+                price=float(request.form['price']),
+                image=filename
+            ))
             db.session.commit()
             flash("Product added successfully!", "success")
             return redirect(url_for('admin_dashboard'))
-        flash("Invalid image file!", "danger")
     return render_template('admin_add.html')
 
 @app.route('/admin/edit/<int:id>', methods=['GET', 'POST'])
 @admin_required
 def admin_edit(id):
     product = Product.query.get_or_404(id)
+
     if request.method == 'POST':
         product.name = request.form['name']
         product.price = float(request.form['price'])
+
         file = request.files.get('image')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             product.image = filename
+
         db.session.commit()
         flash("Product updated successfully!", "success")
         return redirect(url_for('admin_dashboard'))
+
     return render_template('admin_edit.html', product=product)
 
 @app.route('/admin/delete/<int:id>', methods=['POST'])
@@ -300,4 +305,5 @@ if __name__ == '__main__':
                 is_admin=True
             ))
             db.session.commit()
+
     app.run(debug=True)

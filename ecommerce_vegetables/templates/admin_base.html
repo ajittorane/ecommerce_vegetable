@@ -65,12 +65,14 @@
         </li>
 
         <!-- ✅ FIXED LOGOUT -->
-        <li class="nav-item">
-          <a href="{{ url_for('logout') }}"
-             class="btn btn-danger btn-sm d-flex align-items-center gap-1">
-            <i class="bi bi-box-arrow-right"></i> Logout
-          </a>
-        </li>
+     <!-- Admin Logout -->
+<li class="nav-item">
+  <a href="{{ url_for('admin_logout') }}"
+     class="btn btn-danger btn-sm d-flex align-items-center gap-1">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
+</li>
+
       </ul>
     </div>
 
