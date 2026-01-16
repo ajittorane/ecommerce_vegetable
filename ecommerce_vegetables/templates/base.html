@@ -20,14 +20,15 @@
       display: flex;
       flex-direction: column;
     }
-
     main {
       flex: 1;
     }
-
     .navbar-nav .nav-item a:hover {
       opacity: 0.85;
       transition: 0.2s;
+    }
+    .toast-container {
+      z-index: 1055;
     }
   </style>
 </head>
@@ -63,6 +64,7 @@
               </a>
             </li>
 
+            <!-- Admin Logout -->
             <li class="nav-item">
               <a class="btn btn-danger btn-sm d-flex align-items-center gap-1"
                  href="{{ url_for('admin_logout') }}">
@@ -80,6 +82,14 @@
                       class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {{ cart_count }}
                 </span>
+              </a>
+            </li>
+
+            <!-- Vegetable Prices -->
+            <li class="nav-item">
+              <a class="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
+                 href="#vegetable-prices">
+                <i class="bi bi-list-ul"></i> Vegetable Prices
               </a>
             </li>
 
@@ -122,19 +132,19 @@
 
 <!-- ================= TOAST ================= -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div id="cartToast" class="toast align-items-center text-bg-success border-0">
+  <div id="cartToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
       <div class="toast-body">
         ✅ Added to cart successfully
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto"
-              data-bs-dismiss="toast"></button>
+              data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 </div>
 
 <!-- ================= FOOTER ================= -->
-<footer class="bg-dark text-white text-center py-3 w-100">
+<footer class="bg-dark text-white text-center py-3 w-100 mt-auto">
   <div class="container">
     <p class="mb-1">&copy; {{ current_year }} VegStore. All Rights Reserved.</p>
     <p class="mb-0">
