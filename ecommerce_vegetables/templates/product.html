@@ -17,8 +17,9 @@
   <div class="col-md-6 d-flex flex-column justify-content-center">
 
     <h2 class="fw-bold mb-2">{{ product.name }}</h2>
-
-    <p class="fs-4 text-success fw-bold mb-3">₹{{ "%.2f"|format(product.price) }}</p>
+    <p class="fs-4 text-success fw-bold mb-3">
+      ₹{{ "%.2f"|format(product.price) }}
+    </p>
 
     <p class="text-muted mb-4">
       Fresh, farm-picked vegetables delivered straight to your doorstep 🥕🥦
@@ -26,23 +27,32 @@
 
     {% if current_user.is_authenticated %}
 
-    <!-- Quantity Control -->
-    <div class="quantity-control d-flex align-items-center mb-3">
-      <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
-      <input type="number"
-             value="1"
-             min="1"
-             class="form-control form-control-sm mx-2 quantity-input text-center"
-             style="max-width:80px;">
-      <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
-    </div>
+    <!-- ADD TO CART FORM (IMPORTANT) -->
+    <form action="{{ url_for('add_to_cart', id=product.id) }}"
+          method="POST"
+          class="d-flex flex-column">
 
-    <!-- Add to Cart -->
-    <form action="{{ url_for('add_to_cart', id=product.id) }}" method="POST" class="d-flex">
+      <!-- Quantity Control -->
+      <div class="quantity-control d-flex align-items-center mb-3">
+        <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
+
+        <input type="number"
+               class="form-control form-control-sm mx-2 quantity-input text-center"
+               value="1"
+               min="1"
+               style="max-width:80px;">
+
+        <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
+      </div>
+
+      <!-- Hidden Quantity -->
       <input type="hidden" name="quantity" class="cart-quantity" value="1">
+
+      <!-- Add to Cart -->
       <button type="submit" class="btn btn-primary btn-lg w-100 add-to-cart">
         🛒 Add to Cart
       </button>
+
     </form>
 
     {% else %}
@@ -54,49 +64,5 @@
   </div>
 </div>
 
-<!-- JS for quantity + hidden input sync -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const qtyInput = document.querySelector('.quantity-input');
-  const hiddenInput = document.querySelector('.cart-quantity');
-  const btnMinus = document.querySelector('.btn-minus');
-  const btnPlus = document.querySelector('.btn-plus');
-
-  if(!qtyInput || !hiddenInput) return;
-
-  const updateHidden = () => hiddenInput.value = qtyInput.value;
-
-  btnMinus?.addEventListener('click', () => {
-    let val = parseInt(qtyInput.value) || 1;
-    if(val > 1) qtyInput.value = val - 1;
-    updateHidden();
-  });
-
-  btnPlus?.addEventListener('click', () => {
-    let val = parseInt(qtyInput.value) || 1;
-    qtyInput.value = val + 1;
-    updateHidden();
-  });
-
-  qtyInput.addEventListener('input', () => {
-    let val = parseInt(qtyInput.value);
-    if(isNaN(val) || val < 1) val = 1;
-    qtyInput.value = val;
-    updateHidden();
-  });
-
-  // Optional: feedback on Add-to-Cart button
-  const addBtn = document.querySelector('.add-to-cart');
-  addBtn?.addEventListener('click', () => {
-    const originalText = addBtn.innerHTML;
-    addBtn.innerHTML = "✓ Added";
-    addBtn.disabled = true;
-    setTimeout(() => {
-      addBtn.innerHTML = originalText;
-      addBtn.disabled = false;
-    }, 1000);
-  });
-});
-</script>
-
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock %}

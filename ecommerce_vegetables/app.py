@@ -126,14 +126,33 @@ def add_to_cart(id):
     if user_only():
         return redirect(url_for('index'))
 
-    order = Order.query.filter_by(user_id=current_user.id, product_id=id).first()
+    # ✅ get quantity from form
+    try:
+        qty = int(request.form.get('quantity', 1))
+        if qty < 1:
+            qty = 1
+    except ValueError:
+        qty = 1
+
+    order = Order.query.filter_by(
+        user_id=current_user.id,
+        product_id=id
+    ).first()
+
     if order:
-        order.quantity += 1
+        # ✅ add selected quantity
+        order.quantity += qty
     else:
-        db.session.add(Order(user_id=current_user.id, product_id=id, quantity=1))
+        db.session.add(Order(
+            user_id=current_user.id,
+            product_id=id,
+            quantity=qty
+        ))
+
     db.session.commit()
     flash("Product added to cart", "success")
     return redirect(url_for('cart'))
+
 
 @app.route('/cart')
 @login_required
