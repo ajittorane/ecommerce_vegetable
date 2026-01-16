@@ -12,6 +12,7 @@
     <div class="card shadow-sm p-4 rounded">
         <form method="POST" enctype="multipart/form-data">
 
+            <!-- Product Name -->
             <div class="mb-3">
                 <label for="productName" class="form-label fw-semibold">Product Name</label>
                 <input type="text" id="productName" name="name"
@@ -20,6 +21,7 @@
                        required>
             </div>
 
+            <!-- Price -->
             <div class="mb-3">
                 <label for="productPrice" class="form-label fw-semibold">Price (₹)</label>
                 <input type="number" id="productPrice"
@@ -30,6 +32,17 @@
                        required>
             </div>
 
+            <!-- Availability -->
+            <div class="mb-3">
+                <label for="productStatus" class="form-label fw-semibold">Product Status</label>
+                <select id="productStatus" name="status" class="form-select" required>
+                    <option value="available" selected>Available</option>
+                    <option value="upcoming">Upcoming</option>
+                </select>
+                <div class="form-text">Select whether the product is available for purchase or coming soon.</div>
+            </div>
+
+            <!-- Product Image -->
             <div class="mb-3">
                 <label for="productImage" class="form-label fw-semibold">Product Image</label>
                 <input type="file"
@@ -41,6 +54,7 @@
                 <div class="form-text">Allowed formats: PNG, JPG, JPEG, WEBP</div>
             </div>
 
+            <!-- Submit Button -->
             <div class="d-flex justify-content-end gap-2">
                 <button type="submit" class="btn btn-success px-4">
                     <i class="bi bi-plus-circle"></i> Add Product

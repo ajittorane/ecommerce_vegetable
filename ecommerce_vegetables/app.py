@@ -36,6 +36,7 @@ class Product(db.Model):
     name = db.Column(db.String(150), nullable=False)
     price = db.Column(db.Float, nullable=False)
     image = db.Column(db.String(150), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='available')  # available / upcoming
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -86,7 +87,6 @@ def register():
         if User.query.filter_by(username=request.form['username']).first():
             flash("Username already exists", "danger")
             return redirect(url_for('register'))
-
         user = User(
             username=request.form['username'],
             password=generate_password_hash(request.form['password']),
@@ -121,6 +121,11 @@ def logout():
 def add_to_cart(id):
     if user_only():
         flash("Admins cannot add products to cart!", "warning")
+        return redirect(url_for('index'))
+
+    product = Product.query.get_or_404(id)
+    if product.status == 'upcoming':
+        flash("This product is coming soon and cannot be added yet.", "info")
         return redirect(url_for('index'))
 
     try:
@@ -250,14 +255,17 @@ def admin_add():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
             db.session.add(Product(
                 name=request.form['name'],
                 price=float(request.form['price']),
-                image=filename
+                image=filename,
+                status=request.form.get('status', 'available')
             ))
             db.session.commit()
             flash("Product added successfully!", "success")
             return redirect(url_for('admin_dashboard'))
+
         flash("Invalid image file!", "danger")
     return render_template('admin_add.html')
 
@@ -268,6 +276,7 @@ def admin_edit(id):
     if request.method == 'POST':
         product.name = request.form['name']
         product.price = float(request.form['price'])
+        product.status = request.form.get('status', 'available')
         file = request.files.get('image')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
