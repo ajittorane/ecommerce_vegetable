@@ -19,6 +19,7 @@
           <th>Action</th>
         </tr>
       </thead>
+
       <tbody>
         {% set grand_total = 0 %}
         {% for order in orders %}
@@ -26,6 +27,7 @@
           {% if p %}
             {% set subtotal = p.price * order.quantity %}
             {% set grand_total = grand_total + subtotal %}
+
             <tr data-price="{{ p.price }}" data-order-id="{{ order.id }}">
               <td>{{ loop.index }}</td>
               <td class="text-start fw-semibold">{{ p.name }}</td>
@@ -34,14 +36,25 @@
               <!-- Quantity Controls -->
               <td>
                 <div class="d-flex justify-content-center align-items-center gap-2 quantity-control">
-                  <button type="button" class="btn btn-outline-secondary btn-sm btn-minus" {% if order.quantity <= 1 %}disabled{% endif %}>−</button>
-                  <input type="number" class="form-control form-control-sm quantity-input text-center" value="{{ order.quantity }}" min="1" style="width:60px;">
-                  <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
+                  <button type="button"
+                          class="btn btn-outline-secondary btn-sm btn-minus"
+                          {% if order.quantity <= 1 %}disabled{% endif %}>
+                    −
+                  </button>
+
+                  <span class="fw-semibold quantity-value">{{ order.quantity }}</span>
+
+                  <button type="button"
+                          class="btn btn-outline-secondary btn-sm btn-plus">
+                    +
+                  </button>
                 </div>
               </td>
 
               <!-- Subtotal -->
-              <td class="product-total fw-semibold">₹{{ "%.2f"|format(subtotal) }}</td>
+              <td class="product-total fw-semibold">
+                ₹{{ "%.2f"|format(subtotal) }}
+              </td>
 
               <!-- Remove -->
               <td>
@@ -59,7 +72,9 @@
       <tfoot class="table-light">
         <tr>
           <th colspan="4" class="text-end fs-5">Grand Total:</th>
-          <th colspan="2" class="fs-5 text-success" id="grand-total">₹{{ "%.2f"|format(grand_total) }}</th>
+          <th colspan="2" class="fs-5 text-success" id="grand-total">
+            ₹{{ "%.2f"|format(grand_total) }}
+          </th>
         </tr>
       </tfoot>
     </table>
@@ -89,48 +104,57 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  function updateCartTotals() {
-    let grandTotal = 0;
-    document.querySelectorAll("#cart-table tbody tr").forEach(row => {
-      const price = parseFloat(row.dataset.price);
-      const qty = parseInt(row.querySelector(".quantity-input").value);
-      const totalEl = row.querySelector(".product-total");
-      const total = price * qty;
-      totalEl.textContent = "₹" + total.toFixed(2);
-      grandTotal += total;
-    });
-    document.getElementById("grand-total").textContent = "₹" + grandTotal.toFixed(2);
-  }
+  const cartTable = document.getElementById("cart-table");
+  const grandTotalEl = document.getElementById("grand-total");
 
-  document.querySelectorAll(".quantity-control").forEach(container => {
-    const row = container.closest("tr");
+  if (!cartTable) return;
+
+  const updateTotals = () => {
+    let grandTotal = 0;
+
+    cartTable.querySelectorAll("tbody tr").forEach(row => {
+      const price = parseFloat(row.dataset.price);
+      const qty = parseInt(row.querySelector(".quantity-value").textContent);
+      const total = price * qty;
+
+      row.querySelector(".product-total").textContent = "₹" + total.toFixed(2);
+      grandTotal += total;
+
+      const minusBtn = row.querySelector(".btn-minus");
+      minusBtn.disabled = qty <= 1;
+    });
+
+    grandTotalEl.textContent = "₹" + grandTotal.toFixed(2);
+  };
+
+  cartTable.querySelectorAll(".quantity-control").forEach(control => {
+    const row = control.closest("tr");
     const orderId = row.dataset.orderId;
-    const qtyInput = container.querySelector(".quantity-input");
-    const btnMinus = container.querySelector(".btn-minus");
-    const btnPlus = container.querySelector(".btn-plus");
+    const qtyEl = control.querySelector(".quantity-value");
+    const minus = control.querySelector(".btn-minus");
+    const plus = control.querySelector(".btn-plus");
 
     const updateServer = (action) => {
       fetch(`/update_cart/${orderId}`, {
         method: "POST",
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Requested-With": "XMLHttpRequest"
+        },
         body: `action=${action}`
-      }).then(() => updateCartTotals());
+      })
+      .then(() => {
+        let qty = parseInt(qtyEl.textContent);
+        qtyEl.textContent = action === "increase" ? qty + 1 : Math.max(1, qty - 1);
+        updateTotals();
+      });
     };
 
-    btnMinus.addEventListener("click", () => {
-      updateServer("decrease");
-    });
-
-    btnPlus.addEventListener("click", () => {
-      updateServer("increase");
-    });
-
-    qtyInput.addEventListener("input", updateCartTotals);
+    minus.addEventListener("click", () => updateServer("decrease"));
+    plus.addEventListener("click", () => updateServer("increase"));
   });
 
-  // Initial calculation
-  updateCartTotals();
-
+  updateTotals();
 });
 </script>
 
