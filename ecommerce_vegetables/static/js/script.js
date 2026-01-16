@@ -84,9 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCartTotals();
   }
 
-  /* ===========================
-     ADD TO CART BUTTON FEEDBACK
-  =========================== */
  /* ===========================
    ADD TO CART BUTTON FEEDBACK
 =========================== */
