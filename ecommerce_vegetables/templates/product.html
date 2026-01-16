@@ -21,48 +21,64 @@
       ₹{{ "%.2f"|format(product.price) }}
     </p>
 
+    <!-- Availability Badge -->
+    {% if product.price > 0 %}
+    <span class="badge bg-success text-white mb-3 px-3 py-1 rounded-pill">Available</span>
+    {% else %}
+    <span class="badge bg-warning text-dark mb-3 px-3 py-1 rounded-pill">Upcoming</span>
+    {% endif %}
+
     <p class="text-muted mb-4">
       Fresh, farm-picked vegetables delivered straight to your doorstep 🥕🥦
     </p>
 
     {% if current_user.is_authenticated %}
 
-    <!-- ADD TO CART FORM (IMPORTANT) -->
-    <form action="{{ url_for('add_to_cart', id=product.id) }}"
-          method="POST"
-          class="d-flex flex-column">
+    <!-- ADD TO CART FORM -->
+    <form action="{{ url_for('add_to_cart', id=product.id) }}" method="POST" class="d-flex flex-column">
 
       <!-- Quantity Control -->
       <div class="quantity-control d-flex align-items-center mb-3">
         <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
-
         <input type="number"
                class="form-control form-control-sm mx-2 quantity-input text-center"
                value="1"
                min="1"
                style="max-width:80px;">
-
         <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
       </div>
 
       <!-- Hidden Quantity -->
       <input type="hidden" name="quantity" class="cart-quantity" value="1">
 
-      <!-- Add to Cart -->
-      <button type="submit" class="btn btn-primary btn-lg w-100 add-to-cart">
+      <!-- Add to Cart Button -->
+      <button type="submit" class="btn btn-primary btn-lg w-100 add-to-cart btn-hover">
         🛒 Add to Cart
       </button>
 
     </form>
 
-    {% else %}
-    <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-3 w-100">
-      Buy Now
-    </a>
     {% endif %}
 
   </div>
 </div>
 
+<!-- Optional Footer -->
+<footer class="text-center mt-5">
+  <div class="container">
+    <p class="mb-2">&copy; {{ current_year }} VegStore. All Rights Reserved.</p>
+    <div class="d-flex justify-content-center gap-3 mb-2">
+      <a href="#"><i class="bi bi-facebook fs-5"></i></a>
+      <a href="#"><i class="bi bi-twitter fs-5"></i></a>
+      <a href="#"><i class="bi bi-instagram fs-5"></i></a>
+    </div>
+    <p class="mb-0">
+      <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+    </p>
+  </div>
+</footer>
+
+<!-- Script -->
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 {% endblock %}

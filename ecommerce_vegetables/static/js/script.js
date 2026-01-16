@@ -5,14 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
   =========================== */
   document.querySelectorAll(".quantity-control").forEach(container => {
     const qtyInput = container.querySelector(".quantity-input");
-    const hiddenQty = container.closest("form")?.querySelector(".cart-quantity");
+    const form = container.closest("form");
+    const hiddenQty = form?.querySelector(".cart-quantity");
     const btnMinus = container.querySelector(".btn-minus");
     const btnPlus = container.querySelector(".btn-plus");
 
     if (!qtyInput) return;
 
     const updateHidden = () => {
-      if(hiddenQty) hiddenQty.value = qtyInput.value;
+      if (hiddenQty) hiddenQty.value = qtyInput.value;
     };
 
     btnMinus?.addEventListener("click", () => {
@@ -52,12 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const qtyInput = row.querySelector(".quantity-input");
         const totalEl = row.querySelector(".product-total");
         let qty = parseInt(qtyInput.value) || 1;
-        if(qty < 1) qty = 1;
+        if (qty < 1) qty = 1;
         const total = price * qty;
-        if(totalEl) totalEl.textContent = "₹" + total.toFixed(2);
+        if (totalEl) totalEl.textContent = "₹" + total.toFixed(2);
         grandTotal += total;
       });
-      if(grandTotalEl) grandTotalEl.textContent = "₹" + grandTotal.toFixed(2);
+      if (grandTotalEl) grandTotalEl.textContent = "₹" + grandTotal.toFixed(2);
     };
 
     cartRows.forEach(row => {
@@ -87,10 +88,14 @@ document.addEventListener("DOMContentLoaded", () => {
      ADD TO CART BUTTON FEEDBACK
   =========================== */
   document.querySelectorAll(".add-to-cart").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      // Prevent double submission
+      btn.disabled = true;
+
       const originalText = btn.innerHTML;
       btn.innerHTML = "✓ Added";
-      btn.disabled = true;
+
+      // Re-enable button after short delay
       setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
