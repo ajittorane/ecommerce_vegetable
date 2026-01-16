@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ================= USER DASHBOARD ================= -->
+{% if session.get('is_admin') != 1 %}
+
+<div class="card shadow p-4 mb-4">
+    <h3>Welcome, <span class="text-primary">{{ session['user'] }}</span> 👋</h3>
+    <p class="text-muted">You are logged in as a Job Seeker.</p>
+
+    <div class="mt-4">
+        <a href="/jobs" class="btn btn-primary me-2">Browse Jobs</a>
+        <a href="/my_applications" class="btn btn-info">My Applications</a>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- ================= ADMIN DASHBOARD ================= -->
+{% if session.get('is_admin') == 1 %}
+
+<div class="card shadow p-4 mb-4 border-primary">
+    <h3>Welcome Admin, <span class="text-primary">{{ session['user'] }}</span> 👨‍💼</h3>
+    <p class="text-muted">You can manage jobs and applications here.</p>
+
+    <div class="mt-4">
+        <a href="/post_job" class="btn btn-success me-2">Post New Job</a>
+        <a href="/admin" class="btn btn-warning me-2">Manage Applications</a>
+        <a href="/admin" class="btn btn-dark">Manage Jobs</a>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

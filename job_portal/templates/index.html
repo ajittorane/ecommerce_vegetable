@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Available Jobs</h3>
+
+<form method="get" class="mb-3">
+  <input type="text" name="search" class="form-control" placeholder="Search jobs...">
+</form>
+
+{% for job in jobs %}
+<div class="card shadow-sm mb-2 p-2">
+  <h5>{{ job[1] }}</h5>
+  <p>{{ job[2] }}</p>
+  <a href="/apply/{{ job[0] }}" class="btn btn-primary btn-sm">Apply</a>
+</div>
+{% else %}
+<p class="text-muted">No jobs found.</p>
+{% endfor %}
+{% endblock %}

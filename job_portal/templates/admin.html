@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="mb-4 text-primary">Admin Panel</h3>
+
+<!-- ================= APPLICATIONS ================= -->
+<h4 class="mb-3">📄 Received Applications</h4>
+
+{% if apps %}
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Sr No.</th>
+        <th>User</th>
+        <th>Job Title</th>
+        <th>Resume</th>
+        <th>Status</th>
+        <th style="width:240px">Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for a in apps %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ a[1] }}</td>
+        <td>{{ a[2] }}</td>
+
+        <td>
+          {% if a[3] %}
+            <a href="{{ url_for('static', filename='uploads/' ~ a[3]) }}" 
+               target="_blank" class="btn btn-outline-primary btn-sm">
+               View
+            </a>
+          {% else %}
+            <span class="text-muted">N/A</span>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if a[4] == "Shortlisted" %}
+            <span class="badge bg-success">Shortlisted</span>
+          {% elif a[4] == "Rejected" %}
+            <span class="badge bg-danger">Rejected</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">Pending</span>
+          {% endif %}
+        </td>
+
+        <td>
+          <a href="/update_status/{{ a[0] }}/Shortlisted"
+             class="btn btn-success btn-sm">Shortlist</a>
+
+          <a href="/update_status/{{ a[0] }}/Rejected"
+             class="btn btn-warning btn-sm">Reject</a>
+
+          <a href="/delete_application/{{ a[0] }}"
+             class="btn btn-danger btn-sm"
+             onclick="return confirm('Delete this application?');">
+             Delete
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-muted">No applications yet.</p>
+{% endif %}
+
+<hr class="my-4">
+
+<!-- ================= JOBS ================= -->
+<h4 class="mb-3">💼 Posted Jobs</h4>
+
+{% if jobs %}
+<div class="table-responsive">
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Sr No.</th>
+            <th>Job Title</th>
+            <th>Company</th>
+            <th style="width:200px">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for j in jobs %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ j[1] }}</td>
+            <td>{{ j[2] }}</td>
+            <td>
+                <a href="/edit_job/{{ j[0] }}" class="btn btn-primary btn-sm">
+                  Edit
+                </a>
+
+                <a href="/delete_job/{{ j[0] }}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Delete this job and all its applications?');">
+                   Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p class="text-muted">No jobs posted.</p>
+{% endif %}
+
+{% endblock %}

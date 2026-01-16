@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+
+  <!-- Page Heading -->
+  <h2 class="mb-5 fw-bold text-center">🥬 Fres2 Vegetables Delivered to Your Doorstep</h2>
+
+  <div class="row g-4">
+    {% for product in products %}
+    <div class="col-lg-3 col-md-4 col-sm-6">
+      <div class="card h-100 shadow-sm border-0 rounded">
+
+        <!-- Product Image -->
+        <img src="{{ url_for('static', filename='images/' ~ product.image) }}"
+             class="card-img-top"
+             alt="{{ product.name }}"
+             style="height:200px; object-fit:cover; border-top-left-radius: .5rem; border-top-right-radius: .5rem;">
+
+        <!-- Card Body -->
+        <div class="card-body d-flex flex-column">
+
+          <!-- Product Name & Price -->
+          <h5 class="fw-semibold mb-2">{{ product.name }}</h5>
+          <p class="text-success fw-bold mb-3">₹{{ "%.2f"|format(product.price) }}</p>
+
+          {% if current_user.is_authenticated %}
+
+          <!-- Quantity Control -->
+          <div class="quantity-control d-flex align-items-center mb-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-minus">−</button>
+            <input type="number"
+                   class="form-control form-control-sm mx-2 quantity-input text-center"
+                   value="1"
+                   min="1"
+                   style="width:60px;">
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
+          </div>
+
+          <!-- Add to Cart -->
+          <form action="{{ url_for('add_to_cart', id=product.id) }}" method="POST" class="mt-auto">
+            <input type="hidden" name="quantity" class="cart-quantity" value="1">
+            <button type="submit" class="btn btn-primary w-100 add-to-cart">
+              🛒 Add to Cart
+            </button>
+          </form>
+
+          {% else %}
+          <!-- Login Button for Guests -->
+          <a href="{{ url_for('login') }}" class="btn btn-outline-primary w-100 mt-auto">
+            Buy Now
+          </a>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+      <p class="text-muted fs-5">No products available at the moment. Check back soon! 🥦</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Script for quantity controls and add-to-cart feedback -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock %}

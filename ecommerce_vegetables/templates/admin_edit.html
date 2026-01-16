@@ -1,0 +1,74 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+
+<div class="container mt-5" style="max-width: 600px;">
+
+    <!-- Edit Product Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap">
+            <h4 class="mb-2 mb-md-0">✏️ Edit Product</h4>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+
+                <!-- Product Name -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Product Name</label>
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           value="{{ product.name }}"
+                           placeholder="Enter product name"
+                           required>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Price (₹)</label>
+                    <input type="number"
+                           step="0.01"
+                           name="price"
+                           class="form-control"
+                           value="{{ "%.2f"|format(product.price) }}"
+                           placeholder="Enter price"
+                           required>
+                </div>
+
+                <!-- Current Image -->
+                <div class="mb-3 text-center">
+                    <label class="form-label fw-semibold d-block">Current Image</label>
+                    <img src="{{ url_for('static', filename='images/' ~ product.image) }}"
+                         class="rounded border shadow-sm"
+                         style="max-height: 150px;">
+                </div>
+
+                <!-- Upload New Image -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Change Image (optional)</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                    <small class="text-muted d-block mt-1">
+                        Leave empty to keep the current image. Allowed formats: PNG, JPG, JPEG, WEBP.
+                    </small>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Update Product
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

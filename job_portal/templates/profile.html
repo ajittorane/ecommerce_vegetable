@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="/profile" class="nav-link">My Applications</a>
+
+<h3>My Applications</h3>
+
+<table class="table table-bordered">
+<tr>
+  <th>Job</th>
+  <th>Resume</th>
+  <th>Status</th>
+</tr>
+
+{% for a in apps %}
+<tr>
+  <td>{{ a[0] }}</td>
+  <td><a href="{{ url_for('static', filename='uploads/' ~ a[1]) }}">View</a></td>
+  <td>
+    {% if a[2] == "Pending" %}
+      <span class="badge bg-warning">Pending</span>
+    {% elif a[2] == "Shortlisted" %}
+      <span class="badge bg-success">Shortlisted</span>
+    {% else %}
+      <span class="badge bg-danger">Rejected</span>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

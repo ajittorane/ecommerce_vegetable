@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <h2 class="mb-4 text-center">🛒 Your Shopping Cart</h2>
+
+  {% if orders %}
+
+  <div class="table-responsive">
+    <table class="table table-hover shadow-sm align-middle text-center" id="cart-table">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th class="text-start">Product</th>
+          <th>Price (₹)</th>
+          <th>Quantity</th>
+          <th>Subtotal (₹)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set grand_total = 0 %}
+        {% for order in orders %}
+          {% set p = products.get(order.product_id) %}
+          {% if p %}
+            {% set subtotal = p.price * order.quantity %}
+            {% set grand_total = grand_total + subtotal %}
+            <tr data-price="{{ p.price }}" data-order-id="{{ order.id }}">
+              <td>{{ loop.index }}</td>
+              <td class="text-start fw-semibold">{{ p.name }}</td>
+              <td>₹{{ "%.2f"|format(p.price) }}</td>
+
+              <!-- Quantity Controls -->
+              <td>
+                <div class="d-flex justify-content-center align-items-center gap-2 quantity-control">
+                  <button type="button" class="btn btn-outline-secondary btn-sm btn-minus" {% if order.quantity <= 1 %}disabled{% endif %}>−</button>
+                  <input type="number" class="form-control form-control-sm quantity-input text-center" value="{{ order.quantity }}" min="1" style="width:60px;">
+                  <button type="button" class="btn btn-outline-secondary btn-sm btn-plus">+</button>
+                </div>
+              </td>
+
+              <!-- Subtotal -->
+              <td class="product-total fw-semibold">₹{{ "%.2f"|format(subtotal) }}</td>
+
+              <!-- Remove -->
+              <td>
+                <form action="{{ url_for('remove_from_cart', id=order.id) }}" method="POST">
+                  <button class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+
+      <tfoot class="table-light">
+        <tr>
+          <th colspan="4" class="text-end fs-5">Grand Total:</th>
+          <th colspan="2" class="fs-5 text-success" id="grand-total">₹{{ "%.2f"|format(grand_total) }}</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex justify-content-between mt-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg">
+      ← Continue Shopping
+    </a>
+    <a href="{{ url_for('checkout') }}" class="btn btn-success btn-lg">
+      Proceed to Checkout →
+    </a>
+  </div>
+
+  {% else %}
+  <!-- Empty Cart -->
+  <div class="alert alert-info text-center p-5 shadow-sm">
+    <h4 class="mb-3">🛍️ Your cart is empty</h4>
+    <p>Add some fresh products to your cart.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">Shop Now</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  function updateCartTotals() {
+    let grandTotal = 0;
+    document.querySelectorAll("#cart-table tbody tr").forEach(row => {
+      const price = parseFloat(row.dataset.price);
+      const qty = parseInt(row.querySelector(".quantity-input").value);
+      const totalEl = row.querySelector(".product-total");
+      const total = price * qty;
+      totalEl.textContent = "₹" + total.toFixed(2);
+      grandTotal += total;
+    });
+    document.getElementById("grand-total").textContent = "₹" + grandTotal.toFixed(2);
+  }
+
+  document.querySelectorAll(".quantity-control").forEach(container => {
+    const row = container.closest("tr");
+    const orderId = row.dataset.orderId;
+    const qtyInput = container.querySelector(".quantity-input");
+    const btnMinus = container.querySelector(".btn-minus");
+    const btnPlus = container.querySelector(".btn-plus");
+
+    const updateServer = (action) => {
+      fetch(`/update_cart/${orderId}`, {
+        method: "POST",
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `action=${action}`
+      }).then(() => updateCartTotals());
+    };
+
+    btnMinus.addEventListener("click", () => {
+      updateServer("decrease");
+    });
+
+    btnPlus.addEventListener("click", () => {
+      updateServer("increase");
+    });
+
+    qtyInput.addEventListener("input", updateCartTotals);
+  });
+
+  // Initial calculation
+  updateCartTotals();
+
+});
+</script>
+
+{% endblock %}

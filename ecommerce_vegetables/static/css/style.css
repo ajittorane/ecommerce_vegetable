@@ -1,0 +1,134 @@
+/* ----------------- Global ----------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* ----------------- Navbar ----------------- */
+.navbar {
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Navbar links/buttons */
+.navbar a.btn {
+    margin-left: 10px;
+}
+
+/* ----------------- Cards ----------------- */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.card img:hover {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-body h5 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.card-body p {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+}
+
+/* ----------------- Buttons ----------------- */
+.btn-primary {
+    background: #28a745;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-primary:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+.btn-success {
+    background: #007bff;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-success:hover {
+    background: #0069d9;
+    transform: scale(1.05);
+}
+
+/* ----------------- Forms ----------------- */
+input[type="number"],
+input[type="text"],
+input[type="password"] {
+    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+    transition: border 0.3s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+/* ----------------- Table (Cart) ----------------- */
+.table {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table th, .table td {
+    vertical-align: middle !important;
+}
+
+/* ----------------- Footer / Checkout ----------------- */
+.text-center h2 {
+    margin-bottom: 20px;
+}
+
+.text-center p {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.text-center .btn {
+    margin-top: 15px;
+}
+
+/* ----------------- Responsive ----------------- */
+@media (max-width: 768px) {
+    .card img {
+        height: 140px;
+    }
+}

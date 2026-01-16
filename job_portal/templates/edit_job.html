@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Edit Job</h3>
+
+<form method="post" class="w-50">
+  <div class="mb-3">
+    <label>Job Title</label>
+    <input type="text" name="title" class="form-control" value="{{ job[1] }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label>Company</label>
+    <input type="text" name="company" class="form-control" value="{{ job[2] }}" required>
+  </div>
+
+  <button class="btn btn-success">Update Job</button>
+  <a href="/admin" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:70vh;">
+  <div class="card shadow-lg p-4 rounded-4" style="max-width:400px; width:100%;">
+    
+    <h3 class="text-center mb-4 fw-bold">📝 Create Your Account</h3>
+
+    <form method="POST" class="needs-validation" novalidate>
+
+      <!-- Username -->
+      <div class="mb-3">
+        <label for="username" class="form-label fw-semibold">Username</label>
+        <input type="text"
+               id="username"
+               name="username"
+               class="form-control"
+               placeholder="Choose a username"
+               required>
+        <div class="invalid-feedback">
+          Please enter a username.
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label fw-semibold">Password</label>
+        <input type="password"
+               id="password"
+               name="password"
+               class="form-control"
+               placeholder="Create a password"
+               required>
+        <div class="invalid-feedback">
+          Please enter a password.
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-success w-100 mt-3">
+        Register
+      </button>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="text-center mt-3">
+      <span class="text-muted">Already have an account?</span>
+      <a href="{{ url_for('login') }}" class="fw-semibold text-decoration-none">Login here</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Optional: Bootstrap validation script -->
+<script>
+  // Bootstrap client-side validation
+  (function () {
+    'use strict'
+    const forms = document.querySelectorAll('.needs-validation')
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
+
+{% endblock %}

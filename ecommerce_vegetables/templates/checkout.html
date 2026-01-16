@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5" style="max-width: 600px;">
+  <h3 class="mb-4 text-center">🛒 Checkout</h3>
+
+  <form method="POST" class="shadow-sm p-4 rounded bg-light">
+
+    <!-- Name -->
+    <div class="mb-3">
+      <label for="fullName" class="form-label fw-semibold">Full Name</label>
+      <input type="text" id="fullName" name="name" class="form-control" placeholder="Enter your full name" required>
+    </div>
+
+    <!-- Address -->
+    <div class="mb-3">
+      <label for="address" class="form-label fw-semibold">Address</label>
+      <textarea id="address" name="address" class="form-control" rows="3" placeholder="Enter your delivery address" required></textarea>
+    </div>
+
+    <!-- Mobile Number -->
+    <div class="mb-3">
+      <label for="mobile" class="form-label fw-semibold">Mobile Number</label>
+      <input type="text" id="mobile" name="mobile" class="form-control" placeholder="Enter your mobile number" required>
+    </div>
+
+    <!-- Payment Method -->
+    <div class="mb-4">
+      <label for="payment" class="form-label fw-semibold">Payment Method</label>
+      <select id="payment" name="payment" class="form-select" required>
+        <option value="" disabled selected>Select Payment</option>
+        <option value="COD">Cash on Delivery</option>
+        <option value="UPI">Online UPI</option>
+      </select>
+    </div>
+
+    <!-- Place Order Button -->
+    <button type="submit" class="btn btn-success w-100 btn-lg">
+      ✅ Place Order
+    </button>
+
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container d-flex flex-column justify-content-center align-items-center text-center mt-5" style="min-height:60vh;">
+  
+  <!-- Success Icon -->
+  <div class="mb-4">
+    <i class="bi bi-check-circle-fill text-success" style="font-size:4rem;"></i>
+  </div>
+
+  <!-- Heading -->
+  <h2 class="text-success fw-bold mb-3">✅ Your Order Was Placed Successfully!</h2>
+
+  <!-- Message -->
+  <p class="text-muted mb-4 fs-5">
+    Thank you for shopping with <span class="fw-semibold">VegStore</span>.  
+    Your fresh vegetables will be delivered soon 🥦🥕.
+  </p>
+
+  <!-- Button -->
+  <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4">
+    Continue Shopping
+  </a>
+
+</div>
+
+{% endblock %}
