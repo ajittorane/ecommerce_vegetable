@@ -17,7 +17,7 @@ body {
 /* ================= NAVBAR ================= */
 .navbar {
     margin-bottom: 30px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 10px #125ab11f;
     height: 80px;
 }
 
