@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
 {% block content %}
 
 <div class="container mt-5">
@@ -19,6 +19,8 @@
                     <th>Address</th>
                     <th>Mobile</th>
                     <th>Payment</th>
+                    <th>Delivery Status</th>
+                    <th>Update</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,12 +41,51 @@
                         <td>{{ order.customer_name or "-" }}</td>
                         <td>{{ order.address or "-" }}</td>
                         <td>{{ order.mobile or "-" }}</td>
+
+                        <!-- Payment -->
                         <td>
-                            {% if order.payment_method %}
-                                <span class="badge bg-success">{{ order.payment_method }}</span>
+                            {% if order.payment_status == "Paid" %}
+                                <span class="badge bg-success">Paid</span>
                             {% else %}
                                 <span class="badge bg-warning text-dark">Pending</span>
                             {% endif %}
+                        </td>
+
+                        <!-- Delivery Status Badge -->
+                        <td>
+                            {% if order.delivery_status == "Delivered" %}
+                                <span class="badge bg-success">Delivered</span>
+                            {% elif order.delivery_status == "Out for Delivery" %}
+                                <span class="badge bg-primary">Out for Delivery</span>
+                            {% elif order.delivery_status == "Packed" %}
+                                <span class="badge bg-warning text-dark">Packed</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Order Placed</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Update Delivery Status -->
+                        <td>
+                            <form method="POST"
+                                  action="{{ url_for('update_delivery', id=order.id) }}">
+                                <select name="status" class="form-select form-select-sm">
+                                    <option {% if order.delivery_status=="Order Placed" %}selected{% endif %}>
+                                        Order Placed
+                                    </option>
+                                    <option {% if order.delivery_status=="Packed" %}selected{% endif %}>
+                                        Packed
+                                    </option>
+                                    <option {% if order.delivery_status=="Out for Delivery" %}selected{% endif %}>
+                                        Out for Delivery
+                                    </option>
+                                    <option {% if order.delivery_status=="Delivered" %}selected{% endif %}>
+                                        Delivered
+                                    </option>
+                                </select>
+                                <button class="btn btn-sm btn-primary mt-1 w-100">
+                                    Update
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endif %}
@@ -55,7 +96,9 @@
             <tfoot class="table-light">
                 <tr>
                     <th colspan="5" class="text-end fs-5">Total Sales:</th>
-                    <th colspan="5" class="fs-5 text-success fw-bold">₹{{ "%.2f"|format(total_sales) }}</th>
+                    <th colspan="7" class="fs-5 text-success fw-bold">
+                        ₹{{ "%.2f"|format(total_sales) }}
+                    </th>
                 </tr>
             </tfoot>
         </table>

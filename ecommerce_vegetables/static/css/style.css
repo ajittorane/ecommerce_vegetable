@@ -16,10 +16,18 @@ body {
 
 /* ================= NAVBAR ================= */
 .navbar {
-    margin-bottom: 30px;
+    width: 100%;                 /* Full width */
+    margin: 0;                   /* Remove unwanted margins */
+    padding: 0;                  /* Reset padding */
     box-shadow: 0 3px 10px #125ab11f;
     height: 80px;
 }
+
+/* Prevent horizontal scroll issue */
+html, body {
+    overflow-x: hidden;
+}
+
 
 .navbar a.btn {
     margin-left: 10px;

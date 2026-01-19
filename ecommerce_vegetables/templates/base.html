@@ -15,24 +15,21 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
   <style>
-    body 
-    { min-height: 100vh; 
-      display: flex; 
+    body {
+      min-height: 100vh;
+      display: flex;
       flex-direction: column;
-     
     }
-    main
-    { flex: 1; }
-    .navbar-nav .nav-item a:hover { 
-      opacity: 0.85; 
-      transition: 0.2s; 
+    main { flex: 1; }
+    .navbar .btn {
+      margin-left: 10px;
+      padding: 10px;
+    }
+    .navbar-nav .nav-item a:hover {
+      opacity: 0.85;
+      transition: 0.2s;
     }
     .toast-container { z-index: 1055; }
-    
-    .navbar .btn {
-    margin-left: 10px;
-    padding: 10px;
-}
   </style>
 </head>
 
@@ -43,12 +40,15 @@
   <div class="container">
 
     <!-- Brand -->
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-1" href="{{ url_for('index') }}">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-1"
+       href="{{ url_for('index') }}">
       <i class="bi bi-basket-fill"></i> VegStore
     </a>
 
     <!-- Mobile Toggle -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -56,56 +56,46 @@
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav align-items-lg-center gap-2">
 
-        {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated and not current_user.is_admin %}
 
-          {% if current_user.is_admin %}
-            <!-- Admin Dashboard -->
-            <li class="nav-item">
-              <a class="btn btn-warning btn-sm d-flex align-items-center gap-1"
-                 href="{{ url_for('admin_dashboard') }}">
-                <i class="bi bi-speedometer2"></i> Admin Dashboard
-              </a>
-            </li>
+          <!-- Cart -->
+          <li class="nav-item">
+            <a class="btn btn-outline-light btn-sm position-relative d-flex align-items-center gap-1"
+               href="{{ url_for('cart') }}">
+              <i class="bi bi-cart-fill"></i> Cart
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ cart_count or 0 }}
+              </span>
+            </a>
+          </li>
 
-            <!-- Admin Logout -->
-            <li class="nav-item">
-              <a class="btn btn-danger btn-sm d-flex align-items-center gap-1"
-                 href="{{ url_for('admin_logout') }}">
-                <i class="bi bi-box-arrow-right"></i> Logout
-              </a>
-            </li>
+          <!-- My Orders -->
+          <li class="nav-item">
+            <a class="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
+               href="{{ url_for('my_orders') }}">
+              <i class="bi bi-truck"></i> My Orders
+            </a>
+          </li>
 
-          {% else %}
-            <!-- Cart with Count -->
-            <li class="nav-item">
-              <a class="btn btn-outline-light btn-sm position-relative d-flex align-items-center gap-1"
-                 href="{{ url_for('cart') }}">
-                <i class="bi bi-cart-fill"></i> Cart
-                <span id="cart-count"
-                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {{ cart_count }}
-                </span>
-              </a>
-            </li>
+          <!-- Vegetable Prices -->
+          <li class="nav-item">
+            <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#vegPricesModal">
+              <i class="bi bi-list-ul"></i> Vegetable Prices
+            </button>
+          </li>
 
-            <!-- Vegetable Prices (Modal Trigger) -->
-            <li class="nav-item">
-              <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
-                      data-bs-toggle="modal" data-bs-target="#vegPricesModal">
-                <i class="bi bi-list-ul"></i> Vegetable Prices
-              </button>
-            </li>
+          <!-- Logout -->
+          <li class="nav-item">
+            <a class="btn btn-danger btn-sm d-flex align-items-center gap-1"
+               href="{{ url_for('logout') }}">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
 
-            <!-- Logout -->
-            <li class="nav-item">
-              <a class="btn btn-danger btn-sm d-flex align-items-center gap-1"
-                 href="{{ url_for('logout') }}">
-                <i class="bi bi-box-arrow-right"></i> Logout
-              </a>
-            </li>
-          {% endif %}
+        {% elif not current_user.is_authenticated %}
 
-        {% else %}
           <!-- Login -->
           <li class="nav-item">
             <a class="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
@@ -121,6 +111,7 @@
               <i class="bi bi-person-plus-fill"></i> Register
             </a>
           </li>
+
         {% endif %}
 
       </ul>
@@ -135,34 +126,38 @@
 
 <!-- ================= TOAST ================= -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div id="cartToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+  <div id="cartToast" class="toast align-items-center text-bg-success border-0">
     <div class="d-flex">
       <div class="toast-body">
         ✅ Added to cart successfully
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto"
-              data-bs-dismiss="toast" aria-label="Close"></button>
+              data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>
 
 <!-- ================= VEGETABLE PRICES MODAL ================= -->
-<div class="modal fade" id="vegPricesModal" tabindex="-1" aria-labelledby="vegPricesLabel" aria-hidden="true">
+<div class="modal fade" id="vegPricesModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="vegPricesLabel"><i class="bi bi-list-ul"></i> Vegetable Prices</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
 
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-list-ul"></i> Vegetable Prices
+        </h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
         <div class="table-responsive">
-          <table class="table table-striped table-hover align-middle text-center">
+          <table class="table table-striped table-hover text-center">
             <thead class="table-success">
               <tr>
                 <th>#</th>
                 <th>Vegetable</th>
-                <th>Price per kg (₹)</th>
+                <th>Price (₹/kg)</th>
               </tr>
             </thead>
             <tbody>
@@ -174,29 +169,31 @@
               </tr>
               {% else %}
               <tr>
-                <td colspan="3" class="text-center text-muted">No vegetables available</td>
+                <td colspan="3" class="text-muted">No vegetables available</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
+      </div>
 
-      </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
+
     </div>
   </div>
 </div>
 
 <!-- ================= FOOTER ================= -->
-<footer class="bg-dark text-white text-center py-3 w-100 mt-auto">
+<footer class="bg-dark text-white text-center py-3 mt-auto">
   <div class="container">
     <p class="mb-1">&copy; {{ current_year }} VegStore. All Rights Reserved.</p>
     <p class="mb-0">
-      <a href="#" class="text-white text-decoration-none">Privacy Policy</a> |
+      <a href="#" class="text-white text-decoration-none">Privacy</a> |
       <a href="#" class="text-white text-decoration-none">Terms</a> |
-      <a href="https://ajittportfolio.netlify.app/" target="_blank" class="text-white text-decoration-none">
+      <a href="https://ajittportfolio.netlify.app/" target="_blank"
+         class="text-white text-decoration-none">
         Design by Ajit Torane
       </a>
     </p>

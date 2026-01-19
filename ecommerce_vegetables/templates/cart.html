@@ -157,5 +157,50 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTotals();
 });
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.getElementById("pay-btn")?.addEventListener("click", function () {
+
+  fetch("/create-razorpay-order")
+    .then(res => res.json())
+    .then(data => {
+
+      var options = {
+        "key": data.key,
+        "amount": data.amount * 100,
+        "currency": "INR",
+        "name": "VegStore",
+        "description": "Fresh Vegetable Order",
+        "order_id": data.order_id,
+
+        "handler": function (response) {
+          fetch("/payment-success", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body:
+              "razorpay_payment_id=" + response.razorpay_payment_id
+          })
+          .then(() => {
+            window.location.href = "/my-orders";
+          });
+        },
+
+        "method": {
+          "upi": true
+        },
+
+        "theme": {
+          "color": "#28a745"
+        }
+      };
+
+      var rzp = new Razorpay(options);
+      rzp.open();
+    });
+});
+</script>
 
 {% endblock %}

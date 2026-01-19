@@ -20,7 +20,7 @@
                required>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-2">
         <label for="password" class="form-label fw-semibold">Password</label>
         <input type="password"
                id="password"
@@ -30,7 +30,15 @@
                required>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100 py-2 mt-2 fw-semibold">
+      <!-- Forgot Password -->
+      <div class="text-end mb-3">
+        <a href="{{ url_for('forgot_password') }}"
+           class="text-decoration-none small fw-semibold">
+          Forgot password?
+        </a>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
         Login
       </button>
 

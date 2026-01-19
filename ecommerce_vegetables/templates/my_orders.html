@@ -1,16 +1,43 @@
-<table class="table table-bordered">
-<tr>
-  <th>Product</th>
-  <th>Qty</th>
-  <th>Payment</th>
-  <th>Status</th>
-</tr>
-{% for o in orders %}
-<tr>
-  <td>{{ products[o.product_id].name }}</td>
-  <td>{{ o.quantity }}</td>
-  <td>{{ o.payment_status }}</td>
-  <td>{{ o.delivery_status }}</td>
-</tr>
-{% endfor %}
-</table>
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+  <h3 class="mb-4">📦 My Orders</h3>
+
+  {% for order in orders %}
+    {% set product = products[order.product_id] %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+
+        <h5>{{ product.name }}</h5>
+        <p>Quantity: {{ order.quantity }}</p>
+        <p>Total: ₹{{ product.price * order.quantity }}</p>
+
+        <p>
+          <strong>Delivery Status:</strong>
+          <span class="badge bg-info">
+            {{ order.delivery_status }}
+          </span>
+        </p>
+
+        <!-- Progress Bar -->
+        <div class="progress mt-2" style="height: 20px;">
+          {% if order.delivery_status == "Order Placed" %}
+            <div class="progress-bar" style="width:25%">Order Placed</div>
+          {% elif order.delivery_status == "Packed" %}
+            <div class="progress-bar bg-warning" style="width:50%">Packed</div>
+          {% elif order.delivery_status == "Out for Delivery" %}
+            <div class="progress-bar bg-primary" style="width:75%">Out for Delivery</div>
+          {% elif order.delivery_status == "Delivered" %}
+            <div class="progress-bar bg-success" style="width:100%">Delivered</div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  {% else %}
+    <p>No orders found.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}
